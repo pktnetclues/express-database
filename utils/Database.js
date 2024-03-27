@@ -5,14 +5,13 @@ const sequelize = new Sequelize("users", "root", "", {
   dialect: "mysql",
 });
 
-const Databse = async () => {
-  try {
-    await sequelize.authenticate();
+sequelize
+  .authenticate()
+  .then(() => {
     console.log("Connected to database");
-    return sequelize;
-  } catch (error) {
+  })
+  .catch((error) => {
     console.error("Unable to connect to the database:", error);
-  }
-};
+  });
 
-module.exports = Databse;
+module.exports = sequelize;
