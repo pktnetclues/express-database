@@ -1,26 +1,15 @@
 const { QueryTypes } = require("sequelize");
 const Database = require("../utils/Database");
 
-const addUser = async (req, res) => {
+const updateUser = async (req, res) => {
   const { id, name, email, age, gender } = req.body;
-
-  const user = {
-    id,
-    name,
-    email,
-    age,
-    gender,
-  };
 
   try {
     const sequelize = await Database();
 
     const result = await sequelize.query(
-      "INSERT INTO `users` (id, name, email, age, gender) VALUES (:id, :name, :email, :age, :gender)",
-      {
-        replacements: user,
-        type: QueryTypes.INSERT,
-      }
+      `UPDATE users SET name = '${name}', email = '${email}', age = ${age}, gender = '${gender}' WHERE id = ${id}`,
+      { type: QueryTypes.UPDATE }
     );
 
     res.json(result);
@@ -29,4 +18,4 @@ const addUser = async (req, res) => {
   }
 };
 
-module.exports = addUser;
+module.exports = updateUser;
