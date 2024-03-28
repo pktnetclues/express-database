@@ -10,9 +10,11 @@ const getEmployees = require("../controllers/getEmployees");
 const authenticateUser = require("../middleware/authMiddleware");
 const profilePicUploadMiddleware = require("../middleware/profilePicUploadMiddleware");
 
-// Public routes (no authentication required)
+
 employeesRoutes.post("/register", resgisterEmployee);
 employeesRoutes.post("/login", loginEmployee);
+
+
 employeesRoutes.get("/getEmployees", authenticateUser, getEmployees);
 employeesRoutes.post("/getEmployeeById", authenticateUser, getEmployeeById);
 
