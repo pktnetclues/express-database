@@ -1,7 +1,6 @@
 const multer = require("multer");
 const path = require("path");
 
-// Set storage engine for Multer
 const storage = multer.diskStorage({
   destination: "./public/assets",
   filename: function (req, file, cb) {
@@ -12,10 +11,9 @@ const storage = multer.diskStorage({
   },
 });
 
-// Initialize Multer
 const profilePicUploadMiddleware = multer({
   storage: storage,
-  limits: { fileSize: 1000000 }, // 1MB limit
+  limits: { fileSize: 1000000 },
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   },
