@@ -16,13 +16,13 @@ const updateEmployee = async (req, res) => {
   } = req.body;
 
   if (!id || !firstName || !lastName || !email || !password || !department_id) {
-    return res.status(400).json({ error: "Missing required fields" });
+    return res.status(400).json({ error: "Input Missing" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    await sequelize.query(
+    const result = await sequelize.query(
       `UPDATE employees SET 
         firstName = '${firstName}',
         lastName = '${lastName}',
@@ -34,9 +34,16 @@ const updateEmployee = async (req, res) => {
         WHERE id = ${id}`,
       { type: QueryTypes.UPDATE }
     );
-    res.status(200).json({ message: "User updated successfully" });
+
+    //Return If employee not found
+    if (result[1] === 0) {
+      return res.status(404).json({ error: "Employee not found" });
+    }
+
+    //Send Response If Everything goes fine
+    res.status(200).json({ message: "Employee updated successfully" });
   } catch (error) {
-    console.error("Error adding user:", error);
+    console.error("Error adding Employee:", error);
   }
 };
 

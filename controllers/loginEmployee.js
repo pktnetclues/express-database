@@ -18,6 +18,8 @@ const loginEmployee = async (req, res) => {
     { type: QueryTypes.SELECT }
   );
 
+  console.log(existingEmployee);
+
   if (existingEmployee.length === 0) {
     return res.status(400).json({ error: "Email not found" });
   }
