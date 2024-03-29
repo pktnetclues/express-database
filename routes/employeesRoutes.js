@@ -10,10 +10,12 @@ const getEmployees = require("../controllers/getEmployees");
 const authenticateUser = require("../middleware/authMiddleware");
 const profilePicUploadMiddleware = require("../middleware/profilePicUploadMiddleware");
 
-
-employeesRoutes.post("/register", resgisterEmployee);
+employeesRoutes.post(
+  "/register",
+  profilePicUploadMiddleware,
+  resgisterEmployee
+);
 employeesRoutes.post("/login", loginEmployee);
-
 
 employeesRoutes.get("/getEmployees", authenticateUser, getEmployees);
 employeesRoutes.post("/getEmployeeById", authenticateUser, getEmployeeById);

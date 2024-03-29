@@ -1,60 +1,46 @@
 const { QueryTypes } = require("sequelize");
 const sequelize = require("../utils/Database");
 const bcrypt = require("bcrypt");
-const profilePicUploadMiddleware = require("../middleware/profilePicUploadMiddleware");
 
 const registerEmployee = async (req, res) => {
   try {
-    await profilePicUploadMiddleware(req, res, async function (err) {
-      if (err) {
-        return res.status(400).json({ error: err });
-      }
+    const {
+      id,
+      firstName,
+      lastName,
+      email,
+      password,
+      gender,
+      hobbies,
+      department_id,
+    } = req.body;
 
-      if (!req.file) {
-        return res.status(400).json({ error: "Error: No File Selected!" });
-      }
+    if (
+      !id ||
+      !firstName ||
+      !lastName ||
+      !email ||
+      !password ||
+      !department_id
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
-      const {
-        id,
-        firstName,
-        lastName,
-        email,
-        password,
-        gender,
-        hobbies,
-        department_id,
-      } = req.body;
+    const existingEmployee = await sequelize.query(
+      `SELECT email FROM employees WHERE email = '${email}'`,
+      { type: QueryTypes.SELECT }
+    );
 
-      // Check if all required fields are present
-      if (
-        !id ||
-        !firstName ||
-        !lastName ||
-        !email ||
-        !password ||
-        !department_id
-      ) {
-        return res.status(400).json({ error: "Missing required fields" });
-      }
+    if (existingEmployee.length > 0) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
 
-      // Check if email is already registered
-      const existingEmployee = await sequelize.query(
-        `SELECT email FROM employees WHERE email = '${email}'`,
-        { type: QueryTypes.SELECT }
-      );
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      if (existingEmployee.length > 0) {
-        return res.status(400).json({ error: "Email already exists" });
-      }
+    const profilePicture = req.file.filename;
 
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      const profilePicture = req.file; // Get uploaded profile picture details
-
-      // Insert employee data into the database
-      await sequelize.query(
-        `INSERT INTO employees (
+    await sequelize.query(
+      `INSERT INTO employees (
           id,
           firstName,
           lastName,
@@ -73,15 +59,14 @@ const registerEmployee = async (req, res) => {
           '${gender}',
           '${hobbies}',
           ${department_id},
-          '${profilePicture.filename}'
+          '${profilePicture}'
         )`,
-        {
-          type: QueryTypes.INSERT,
-        }
-      );
+      {
+        type: QueryTypes.INSERT,
+      }
+    );
 
-      res.status(200).json({ message: "User added successfully" });
-    });
+    res.status(200).json({ message: "User added successfully" });
   } catch (error) {
     console.error("Error adding user:", error);
     res.status(500).json({ error: "Internal Server Error" });
