@@ -2,12 +2,10 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 
-const sequelize = require("./utils/Database");
-const employeesRoutes = require("./routes/employeesRoutes");
+const sequelize = require("./src/utils/Database");
+const employeesRoutes = require("./src/routes/employeesRoutes");
 
 const app = express();
-
-// Replace bodyParser with specific middleware functions
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
